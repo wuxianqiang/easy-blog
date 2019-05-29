@@ -1,0 +1,18 @@
+language: node_js
+node_js:
+  - "11"
+install:
+  - npm install
+script:
+  - hexo g
+after_script:
+  - cd ./public
+  - git init
+  - git config user.name "wuxianqiang"
+  - git config user.email "2631640352@qq.com"
+  - git add -A
+  - git commit -m "init"
+  - git push --force "${TOKEN}@github.com:wuxianqiang/easy-blog.git" master:gh-pages
+branches:
+  only:
+    - master
