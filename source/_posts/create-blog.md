@@ -29,27 +29,27 @@ npm install
 你需要有一个 GitHub 账号登录，然后新建一个空仓库，把刚才生成的项目提交的这个仓库中。
 
 生成 GitHub 的 token，详细步骤如下图。
-![](./opensetting.png)
-![](./createtoken.png)
+{% asset_img opensetting.png 图片 %}
+{% asset_img createtoken.png 图片 %}
 
 选中所有的选项
-![](./settingtoken.png)
+{% asset_img settingtoken.png 图片 %}
 
 复制生成的token
-![](./copytoken.png)
+{% asset_img copytoken.png 图片 %}
 
 # 自动部署
 
 `https://travis-ci.com/` 通过 GitHub 登录到这个自动部署的网站中，这个网站会自动获取你 GitHub 中的所有仓库，选择你刚才创建的项目，修改设置选项。
 
-增加环境变量，名字是 TOKEN，值是通过 GitHub 生成的 token，是登录 GitHub 的令牌。
-![](./inputtoken.png)
+增加环境变量，名字是 TOKEN，值是通过 GitHub 生成的 `token`，是登录 GitHub 的令牌。
+{% asset_img inputtoken.png 图片 %}
 
 # 添加配置
 
 修改博客的配置文件，将部署的GitHub地址和部署的跟目录加上。保证静态资源可以正常访问。
-![](./changeroot.png)
-![](./changeaddress.png)
+{% asset_img changeroot.png 图片 %}
+{% asset_img changeaddress.png 图片 %}
 
 增加 `.travis.yml` 文件，里面的内容如下，需要改成你的用户名邮箱和 git 项目地址。
 ```
@@ -73,4 +73,4 @@ branches:
     - master
 ```
 
-完成以上操作，然后再推送一次到 GitHub 中，项目就会自动开始部署到 GitHub 的 gh-pages中，每次推送都会自动部署的，关于项目的地址就是的静态页地址。格式是：用户名.gitbub.io/项目名称。
+完成以上操作，然后再推送一次到 GitHub 中，项目就会自动开始部署到 GitHub 的 `gh-pages` 中，每次推送都会自动部署的，关于项目的地址就是的静态页地址。格式是：`用户名.gitbub.io/项目名称`。
