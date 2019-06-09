@@ -3,12 +3,16 @@ title: React中PureComponent原理
 date: 2019-06-09 08:45:22
 tags: React
 ---
+{% asset_img PureComponent.png 图片 %}
+
 PureComponent  会对 `props` 和 `state` 进行浅层比较，并减少了跳过必要更新的可能性。
 
+`React.PureComponent` 与 `React.Component` 很相似。
 
-`React.PureComponent` 与 `React.Component` 很相似。两者的区别在于 `React.Component` 并未实现 `shouldComponentUpdate()`，而 `React.PureComponent `中以浅层对比 `prop` 和 `state` 的方式来实现了该函数。
+两者的区别在于 `React.Component` 并未实现 `shouldComponentUpdate()`，而 `React.PureComponent `中以浅层对比 `prop` 和 `state` 的方式来实现了该函数。
 
 如果赋予 React 组件相同的 `props` 和 `state`，`render()` 函数会渲染相同的内容，那么在某些情况下使用 `React.PureComponent` 可提高性能。
+
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -18,14 +22,21 @@ class Counter extends React.Component {
     count: 0
   }
   handleClick = () => {
-    this.setState({ count: this.state.count + 1 })
+    this.setState({
+      count: this.state.count + 1
+    })
   }
   render() {
     return (
       <div>
         <Title title='计数器'></Title>
-        <span>{this.state.count}</span>
-        <button onClick={this.handleClick}>+1</button>
+        <span>
+          { this.state.count }
+        </span>
+        <button
+          onClick={this.handleClick}>
+          +1
+        </button>
       </div>
     );
   }
@@ -45,7 +56,9 @@ ReactDOM.render(<Counter />, document.getElementById('root'))
 ```
 上面演示的代码中 `Counter` 组件中使用了 `Title` 组件，`Counter` 组件每次修改状态都会导致 `Title` 组件重新渲染。可以看到 `console` 语句多次打印出 `Title render`。如果不想让 `Title` 组件多次渲染，就需要让 `Title` 组件继承 `PureComponent` 组件。
 # 开始使用
+
 1. 类组件使用 `PureComponent`
+
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -61,8 +74,13 @@ class Counter extends React.Component {
     return (
       <div>
         <Title title='计数器'></Title>
-        <span>{this.state.count}</span>
-        <button onClick={this.handleClick}>+1</button>
+        <span>
+          { this.state.count }
+        </span>
+        <button
+          onClick={this.handleClick}>
+          +1
+        </button>
       </div>
     );
   }
@@ -72,7 +90,9 @@ class Title extends React.PureComponent {
   render() {
     console.log('Title render')
     return (
-      <p>{this.props.title}</p>
+      <p>
+        { this.props.title }
+      </p>
     );
   }
 }
@@ -87,14 +107,21 @@ class Counter extends React.Component {
     count: 0
   }
   handleClick = () => {
-    this.setState({ count: this.state.count + 1 })
+    this.setState({
+      count: this.state.count + 1
+    })
   }
   render() {
     return (
       <div>
         <Title title='计数器'></Title>
-        <span>{this.state.count}</span>
-        <button onClick={this.handleClick}>+1</button>
+        <span>
+          { this.state.count }
+        </span>
+        <button
+          onClick={this.handleClick}>
+          +1
+        </button>
       </div>
     );
   }
@@ -121,15 +148,17 @@ function memo (Func) {
 ```
 
 4. `PureComponent` 的原理
-```js
 
+```js
 import React, { Component } from 'react';
 
 function shallowEqual(obj1, obj2) {
   if (obj1 === obj2) {
     return true
   }
-  if (typeof obj1 !== 'object' || obj1 === null || typeof obj2 !== 'object' || obj2 === null) {
+  let noObj1 = typeof obj1 !== 'object' || obj1 === null
+  let noObj2 = typeof obj2 !== 'object' || obj2 === null
+  if (noObj1 || noObj2) {
     return false
   }
   let keys1 = Object.keys(obj1)
@@ -138,7 +167,8 @@ function shallowEqual(obj1, obj2) {
     return false
   }
   for (const key of keys1) {
-    if (!obj2.hasOwnProperty(key) || obj1[key] !== obj2[key]) {
+    let equalKey = obj1[key] === obj2[key]
+    if (!obj2.hasOwnProperty(key) || !equalKey) {
       return false
     }
   }
@@ -147,7 +177,9 @@ function shallowEqual(obj1, obj2) {
 
 class PureComponent extends Component {
   shouldComponentUpdate(nextProps, nextState) {
-    return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState)
+    let equalProps = shallowEqual(this.props, nextProps)
+    let equalState = shallowEqual(this.state, nextState)
+    return !equalProps || !equalState
   }
   render() {
     return this.props.children;

@@ -3,6 +3,8 @@ title: 自动部署你的博客
 date: 2019-06-01 10:18:50
 tags:
 ---
+{% asset_img blog.jpg 图片 %}
+
 通过 Hexo 快速生成静态博客，通过 GitHub 代码托管，然后通过 CI 网站持续部署。
 
 # 生成博客
