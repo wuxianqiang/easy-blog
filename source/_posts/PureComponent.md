@@ -11,6 +11,8 @@ PureComponent  会对 `props` 和 `state` 进行浅层比较，并减少了跳�
 
 两者的区别在于 `React.Component` 并未实现 `shouldComponentUpdate()`，而 `React.PureComponent `中以浅层对比 `prop` 和 `state` 的方式来实现了该函数。
 
+<!-- more -->
+
 如果赋予 React 组件相同的 `props` 和 `state`，`render()` 函数会渲染相同的内容，那么在某些情况下使用 `React.PureComponent` 可提高性能。
 
 ```js
