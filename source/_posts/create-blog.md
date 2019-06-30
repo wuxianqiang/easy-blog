@@ -1,7 +1,7 @@
 ---
 title: 自动部署你的博客
 date: 2019-06-01 10:18:50
-tags:
+tags: Share
 ---
 {% asset_img blog.jpg 图片 %}
 

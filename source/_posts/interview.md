@@ -1,7 +1,7 @@
 ---
 title: 大厂的面试题
 date: 2019-06-29 15:00:38
-tags:
+tags: Interview
 ---
 {% asset_img interview.jpg 图片 %}
 
