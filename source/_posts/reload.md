@@ -205,3 +205,107 @@ process.on('uncaughtException', () => {
 至此我们完成了进程的平滑重启，一旦有异常出现，主进程会创建新的工作进程来为用户服务，旧的进程一旦处理完已有连接就自动断开。整个过程使得我们的应用的稳定性和健壮性大大提高。
 
 {% asset_img process2.png 图片 %}
+
+这里存在问题的是有可能我们的连接是长连接，不是HTTP服务的这种短连接，等待长连接断开可能需要较久的时间。为此为已有连接的断开设置一个超时时间是必要的，在限定时间里强制退出的设置如下所示：
+
+```js
+const http = require('http')
+const process = require('process')
+
+const server = http.createServer(
+  (req, res) => {
+    res.writeHead(200, {
+      'Content-Type': 'text/plain',
+    })
+    res.end('handle by child')
+  }
+)
+
+let worker;
+process.on('message', (m, tcp) => {
+  if (m === 'server') {
+    worker = tcp;
+    tcp.on('connection', socket => {
+      server.emit('connection', socket)
+    })
+  }
+})
+
+// 监听未捕获的异常
+process.on('uncaughtException', () => {
+  // 通知主进程去创建一个新的进程
+  process.send({act: 'suicide'})
+  // 停止接收新的连接
+  worker.close(() => {
+    // 所有已有连接断开后退出进程
+    process.exit(1)
+  })
+  // 5秒后退出进程
+  setTimeout(() => {
+    process.exit(1)
+  }, 5000)
+})
+```
+## 限量重启
+
+通过自杀信号告知主进程可以使得新连接总是有进程服务，但是依然还是有极端的情况。工作进程不能无限制地被重启，如果启动的过程中就发生了错误，或者启动后接到连接就收到错误，会导致工作进程被频繁重启，这种频繁重启不属于我们捕捉未知异常的情况，因为这种短时间内频繁重启已经不符合预期的设置，极有可能是程序编写的错误。
+
+为了消除这种无意义的重启，在满足一定规则的限制下，不应当反复重启。比如在单位时间内规定只能重启多少次，超过限制就触发 `giveup` 事件，告知放弃重启工作进程这个重要事件。
+
+为了完成限量重启的统计，我们引入一个队列来做标记，在每次重启工作进程之间进行打点并判断重启是否太过频繁，如下所示：
+
+```js
+const fork = require('child_process').fork;
+const cpus = require('os').cpus();
+const net = require('net')
+const server = net.createServer()
+server.listen(8080)
+
+// 重启次数
+const limit = 10;
+// 时间单位
+const during = 60000;
+let restart = [];
+
+const isTooFrequently = function () {
+  // 记录重启时间
+  const time = Date.now();
+  const length = restart.push(time);
+  if (length > limit) {
+    // 取出最后10个记录
+    restart = restart.slice(limit * -1);
+  }
+  // 最后一次重启到前10次重启之间的时间间隔
+  const step = restart[restart.length - 1] - restart[0];
+  return restart.length >= limit && step < during
+};
+
+const workers = {}
+const createWorker = function () {
+  // 检查是否太过频繁
+  if (isTooFrequently()) {
+    // 触发giveup事件后，不再重启
+    process.emit('giveup', length, during);
+    return;
+  }
+  const worker = fork('./worker.js')
+  worker.on('exit', () => {
+    console.log(`进程退出：${worker.pid}`)
+    delete workers[worker.pid]
+    createWorker()
+  })
+  worker.on('message', message => {
+    if (message.act === 'suicide') {
+      createWorker()
+    }
+  })
+  worker.send('server', server)
+  workers[worker.pid] = worker
+  console.log(`进程创建：${worker.pid}`)
+}
+
+for (let i = 0; i < cpus.length; i++) {
+  createWorker()
+}
+```
+`giveup` 事件是比 `uncaughtException` 更严重的异常事件。 `uncaughtException` 只代表集群中某个工作进程退出，在整体性保证下，不会出现用户得不到服务的情况，但是这个 `giveup` 事件则表示集群中没有任何进程服务了，十分危险。为了健壮性考虑，我们应在 `giveup` 事件中添加重要日志，并让监控系统监视到这个严重错误，进而报警等。
