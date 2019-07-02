@@ -10,7 +10,7 @@ tags: Node
 
 <!-- more -->
 
-# buffer是什么？
+## buffer是什么？
 
 buffer是Node底层通过C++申请的内存，通过JS来分配内存。也就是存放文件的缓冲区。那么问题来了，为什么叫做缓存区，了解之前就要先跟大家科普一下V8的内存限制。
 
@@ -45,7 +45,7 @@ reader.pipe(writer);
 
 **虽然buffer是申请的内存，不受V8内存的限制，但是物理内存依然是有限的。**
 
-# 了解Buffer
+## 了解Buffer
 
 Buffer是一个像Array的对象，但它主要用于**操作字节**。
 

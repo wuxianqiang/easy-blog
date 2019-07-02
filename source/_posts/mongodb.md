@@ -6,7 +6,7 @@ tags: Node
 
 {% asset_img banner.jpg 图片 %}
 
-mongodb是关系型数据库
+MongoDB是一个基于分布式文件存储的数据库
 
 <!-- more -->
 
@@ -50,4 +50,31 @@ db.once('open', () => {
 db.once('error', () => {
   console.log('数据连接失败')
 })
+```
+
+定义表单的结构，并且在模型中使用它
+```js
+const { Schema, model } = require('mongoose')
+
+const userSchema = new Schema({
+  email: String,
+  password: String,
+  salt: String,
+  username: String
+})
+
+module.exports = model('user', userSchema)
+```
+实现数据的增，删，改，查
+```js
+const db = require('./user')
+db.create({
+  email: '123@qq.com',
+  password: '123',
+  salt: '123',
+  username: '123'
+})
+db.deleteOne({ username: '123' }
+db.updateOne({ username: '123' }, { username: '456' })
+db.findOne({ username: '123' }
 ```

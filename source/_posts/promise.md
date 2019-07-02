@@ -8,7 +8,7 @@ tags: JavaScript
 
 [规范的文档说明](https://segmentfault.com/a/1190000002452115)
 
-1. 第一步实现简单调用，成功调用resolve，失败调用reject，参数传入then的回调函数中。
+1.第一步实现简单调用，成功调用resolve，失败调用reject，参数传入then的回调函数中。
 
 <!-- more -->
 
@@ -57,7 +57,9 @@ p.then((data) => {
   console.log('失败', err)
 })
 ```
-2. 为了防止resolve和reject被多次调用，需要保证状态唯一
+
+2.为了防止resolve和reject被多次调用，需要保证状态唯一
+
 ```js
 function Promise (executor) {
   let self = this;
@@ -93,7 +95,9 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
   }
 }
 ```
+
 测试代码
+
 ```js
 let Promise = require('./index.js')
 
@@ -108,7 +112,9 @@ p.then((data) => {
   console.log('失败', err)
 })
 ```
-3. 异步处理，then回调函数的参数还没有值，状态是pending，通过发布订阅模式处理回调
+
+3.异步处理，then回调函数的参数还没有值，状态是pending，通过发布订阅模式处理回调
+
 ```js
 function Promise (executor) {
   let self = this;
@@ -156,7 +162,9 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
   }
 }
 ```
+
 测试代码
+
 ```js
 let Promise = require('./index.js')
 
@@ -172,7 +180,9 @@ p.then((data) => {
   console.log('失败', err)
 })
 ```
+
 处理then回调的返回值类型，递归解析处理值为普通值
+
 ```js
 function Promise (executor) {
   let self = this;
@@ -282,7 +292,9 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
   return promise2
 }
 ```
+
 测试代码
+
 ```js
 let Promise = require('./index.js')
 
@@ -300,7 +312,9 @@ let promise2 = p.then((data) => {
   console.log(err)
 })
 ```
+
 处理then回调函数参数的默认值，then里面的回调都是可以不传的
+
 ```js
 function Promise (executor) {
   let self = this;
@@ -416,7 +430,9 @@ Promise.prototype.then = function (onFulfilled, onRejected) {
   return promise2
 }
 ```
+
 promise类静态方法resolve和reject的原理
+
 ```js
 Promise.resolve = function () {
   return new Promise(function (resolve, reject) {
@@ -430,7 +446,9 @@ Promise.reject = function () {
   })
 }
 ```
+
 promise静态方法all的实现原理是计数器，应为要保证结果的顺序
+
 ```js
 Promise.all = function (arrFn) {
   return new Promise(function (resolve, reject) {
@@ -450,13 +468,17 @@ Promise.all = function (arrFn) {
   })
 }
 ```
+
 promise中cache方法其实就是then方法的简写
+
 ```js
 Promise.prototype.catch = function (errFn) {
   return this.then(null, errFn)
 }
 ```
+
 finally是promise中无论状态成功还是失败都会执行的
+
 ```js
 Promise.prototype.finally = function (callback) {
   return this.then((data) => {
@@ -468,7 +490,9 @@ Promise.prototype.finally = function (callback) {
   })
 }
 ```
+
 promise中race的调用方式
+
 ```js
 Promise.race = function (arrFn) {
   return new Promise(function (resolve, reject) {
