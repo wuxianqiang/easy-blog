@@ -133,7 +133,7 @@ app.get('/clock', function (req, res) {
     }, 1000);
 })
 
-app.use(express.stat
+app.use(express.static(path.resolve(__dirname, 'public')))
 ```
 ```js
 <body>
