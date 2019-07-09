@@ -3,6 +3,7 @@ title: shell中的变量
 date: 2019-07-04 16:40:33
 tags: Linux
 ---
+{% asset_img banner.png 图片 %}
 
 什么是变量？
 
