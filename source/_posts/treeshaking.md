@@ -14,7 +14,7 @@ tags: JavaScript
 
 CommonJS 模块输出的是值的拷贝，也就是说，一旦输出一个值，模块内部的变化就影响不到这个值。请看下面这个模块文件lib.js的例子。
 
-```
+```js
 // lib.js
 var counter = 3;
 function incCounter() {
@@ -26,7 +26,7 @@ module.exports = {
 };
 ```
 上面代码输出内部变量counter和改写这个变量的内部方法incCounter。然后，在main.js里面加载这个模块。
-```
+```js
 // main.js
 var mod = require('./lib');
 
@@ -41,7 +41,7 @@ ES6 模块的运行机制与 CommonJS 不一样。JS 引擎对脚本静态分析
 换句话说，ES6 的import有点像 Unix 系统的“符号连接”，原始值变了，import加载的值也会跟着变。因此，ES6 模块是动态引用，并且不会缓存值，模块里面的变量绑定其所在的模块（动态绑定）。
 
 第二个差异是因为 CommonJS 加载的是一个对象（即module.exports属性），该对象只有在脚本运行完才会生成。而 ES6 模块不是对象，它的对外接口只是一种静态定义，在代码静态解析阶段就会生成。
-```
+```js
 // 不能这样写
 const flag = true
 if (flag) {
