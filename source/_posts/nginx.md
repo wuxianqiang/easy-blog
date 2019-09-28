@@ -1,7 +1,7 @@
 ---
 title: 快速了解nginx配置
 date: 2019-09-28 08:15:21
-tags: JavaScript
+tags: nginx
 ---
 {% asset_img banner.png 图片 %}
 
