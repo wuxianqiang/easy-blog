@@ -1,7 +1,7 @@
 ---
-title: treefind
+title: 实现二叉查找树
 date: 2019-09-27 12:39:40
-tags:
+tags: JavaScript
 ---
 
 {% asset_img banner.png 图片 %}
